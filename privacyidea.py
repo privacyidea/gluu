@@ -2,8 +2,8 @@ from org.gluu.oxauth.security import Identity
 from org.gluu.oxauth.service import AuthenticationService, SessionIdService
 from org.gluu.model.custom.script.type.auth import PersonAuthenticationType
 from org.gluu.service.cdi.util import CdiUtil
-from org.gluu.oxauth.service import UserService
-from org.gluu.util import StringHelper
+
+
 
 # TODO: Import the privacyIDEA Java SDK
 
@@ -13,6 +13,7 @@ import java
 class PersonAuthentication(PersonAuthenticationType):
     def __init__(self, currentTimeMillis):
         self.currentTimeMillis = currentTimeMillis
+        self.identity = CdiUtil.bean(Identity)
 
     def init(self, configurationAttributes):
         print "privacyIDEA. Initialization"
@@ -53,17 +54,23 @@ class PersonAuthentication(PersonAuthenticationType):
         if step == 1:
             print "privacyIDEA. Authenticate against privacyIDEA"
             print "privacyIDEA. exit authenticate"
-            return True
-
-            authenticationService = CdiUtil.bean(AuthenticationService)
-            identity = CdiUtil.bean(Identity)
-            credentials = identity.getCredentials()
+            # authenticationService = CdiUtil.bean(AuthenticationService)
+            credentials = self.identity.getCredentials()
             user_name = credentials.getUsername()
             user_password = credentials.getPassword()
 
-            # TODO: Now call the validate/check method of the SDK and pass the user_name and user_password.
+            if (user_password == "privacyIDEArocks"):
+                # TODO: Now call the validate/check method of the SDK and pass the user_name and user_password.
+                # If the user is successfully authenticated, we need to add "aut_user" to the session.
+                sessionIdService = CdiUtil.bean(SessionIdService)
+                sessionId = sessionIdService.getSessionId() # fetch from persistence
+                sessionId.getSessionAttributes().put("auth_user", user_name)
+                sessionIdService.updateSessionId(sessionId)
+                #    logged_in = authenticationService.authenticate(user_name, user_password)
+                print("privacyIDEA. Authenticate. Logged in: {0!s}".format(user_name))
+                return True
 
-            return True
+            return False
         else:
             # TODO: If we have challenge response, we probably do further steps to answer the challenges
             print("privacyIDEA. Authenticate. Further step")
