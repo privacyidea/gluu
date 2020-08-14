@@ -1,0 +1,200 @@
+
+<!DOCTYPE composition>
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt4">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>oxAuth - Login</title>
+		<link rel="icon" href="/oxauth/servlet/favicon" type="image/x-icon" />
+		<link type="text/css" rel="stylesheet" href="/oxauth/stylesheet/style.css" />
+		<link type="text/css" rel="stylesheet" href="/oxauth/stylesheet/bootstrap.min.css" />
+		<link rel="stylesheet" href="/oxauth/stylesheet/fontawesome.min.css" />
+		<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600" />
+
+		<script src="/oxauth/js/jquery-3.4.1.min.js"></script>
+		<script src="/oxauth/js/bootstrap.min.js"></script>
+		<script src="/oxauth/js/platform.js"></script>
+		<style>
+body {
+	margin-bottom: 3% !important;
+}
+
+.footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	color: white;
+	height: 55px;
+	background-color: #00BE79;
+	justify-content: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@media screen and (min-height: 720px) {
+	.footer {
+		position: absolute;
+		height: 5px !important;
+	}
+}
+</style></head><body>
+		<div>
+			<div class="login-logo">
+				<img style="max-height: 70px; padding-bottom: 2px;" id="AppLogo" src="/oxauth/servlet/logo" />
+			</div>
+			<div class="bs-docs-section" style="border-top: 2px solid #1ab26b !important; margin-bottom: 5px !important; margin-top: 1px !important; padding-top: 1px !important;"></div>
+		</div>
+		<div class="body">
+		<div class="container">
+				<div class="login_bx_1" style="border-radius: 10px; margin-top: 0px; background: white; border: 1px solid #008b8b;">
+					<div class="row">
+					</div>
+<form id="loginForm" name="loginForm" method="post" action="/oxauth/login.htm" enctype="application/x-www-form-urlencoded" style="padding:30px;">
+<input type="hidden" name="loginForm" value="loginForm" />
+
+						<div class="form-group row"></div>
+						<div class="row">
+							<div class="col-sm-3 col-md-3">Challenge Response, enter "otp" :-)
+							</div>
+							<div class="col-sm-9 col-md-9"><input id="password" type="password" name="password" autocomplete="off" value="" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group row"></div>
+						<div class="row">
+							<div class="col-sm-5 col-md-5"><label for="loginForm:rememberme" class="col-form-label">Remember me</label>
+							</div>
+							<div class="col-sm-2 col-md-2" style="padding-top: 15px">
+								<input type="checkbox" value="rememberme" id="rememberme" name="rememberme" />
+							</div>
+						</div>
+						<div class="form-group row">
+							<div class="col-sm-offset-2 offset-md-2 col-sm-8 col-md-8"><input id="loginButton" type="submit" name="loginButton" value="    Login" style="background-color: #00BE79; color:white;" class="btn col-sm-12" onclick="checkRemembeMe()" />
+							</div>
+						</div>
+						<div class="form-group row">
+							<div class="col-sm-offset-3 offset-md-3 col-sm-7 col-md-7">
+								<div class="forgot_link">
+									<a href="/identity/person/passwordReminder.htm" style="color: blue;">Forgot your password?
+									</a>
+								</div>
+							</div>
+						</div><input id="platform" type="hidden" name="platform" /><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="stateless" autocomplete="off" />
+</form>
+					<div class="row">
+						<div align="center" class="col-sm-offset-4 col-sm-9">
+						</div>
+					</div>
+				</div>
+		</div>
+		<script type="text/javascript">
+
+            window.onload = function () {
+                var userNameField = document.getElementById("loginForm:username");
+                var passwordField = document.getElementById("loginForm:password");
+
+                passwordField.value = "";
+                var userName = '';
+                if (userName) {
+                    userNameField.value = userName;
+                    passwordField.focus();
+                } else {
+                    userNameField.focus();
+                }
+
+                var displayRegister = false;
+                if (displayRegister) {
+                    var registerButton = document.getElementById("loginForm:registerId");
+                    if (registerButton != null) {
+                        registerButton.style.display = 'inline';
+                    }
+                }
+            };
+
+    		$(document).ready(function () {
+    			$('.other').click(function(){
+    				$('#social_new').toggle();
+    			});
+                if (localStorage.chkbx && localStorage.chkbx != '') {
+                    $('#rememberme').attr('checked', 'checked')
+                    document.getElementById("loginForm:username").value = localStorage.usrname;
+                } else {
+                    $('#rememberme').removeAttr('checked');
+                    document.getElementById("loginForm:username").value = "";
+                }
+
+                $('#rememberme').click(function() {
+                    checkRemembeMe();
+                });
+
+                fillPlatformField();
+    		});
+
+    		function checkRemembeMe() {
+                if ($('#rememberme').is(':checked')) {
+                    localStorage.usrname = document.getElementById("loginForm:username").value;
+                    localStorage.chkbx = $('#rememberme').val();
+                } else {
+                    localStorage.usrname = '';
+                    localStorage.chkbx = '';
+                }
+			}
+
+            function fillPlatformField() {
+                try {
+                    re = /^([^\.]+\.[^\.]+)\..+/;
+                    result = re.exec(platform.version);
+                    if (result != null) {
+                        platform.version=result[1];
+                    }
+    			    document.getElementById("loginForm:platform").value = JSON.stringify(platform);
+                } catch (e) {
+                }
+            }
+        </script>
+		</div></body>
+	<footer class="footer" id="appFooter">
+	<div class="row" style="margin-top: 20px;">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6 centered" style="text-align: center;">
+			<p class="centered">
+				© <a target="_blank" href="https://github.com/GluuFederation/oxAuth/blob/master/LICENSE">Gluu, Inc</a> | <a target="_blank">Privacy Policy</a> | <a target="_blank">Terms of Service</a>
+			</p>
+		</div>
+		<div class="col-sm-3"></div>
+	</div>
+	</footer>
+	<script type="text/javascript">
+		//<![CDATA[
+		$(document)
+				.ready(
+						function() {
+							$(window)
+									.scroll(
+											function() {
+												if (window.innerHeight < 620) {
+													document
+															.getElementById("appFooter").style.display = "none";
+												} else {
+													document
+															.getElementById("appFooter").style.display = "block";
+												}
+
+											});
+
+							$(window)
+									.on(
+											'resize',
+											function() {
+												var win = $(this);
+												if (win.height() >= 620) {
+													document
+															.getElementById("appFooter").style.display = "block";
+												} else {
+													document
+															.getElementById("appFooter").style.display = "none";
+												}
+											});
+						});
+
+		//]]>
+	</script>
+</html>

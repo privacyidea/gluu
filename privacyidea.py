@@ -14,6 +14,8 @@ class PersonAuthentication(PersonAuthenticationType):
     def __init__(self, currentTimeMillis):
         self.currentTimeMillis = currentTimeMillis
         self.identity = CdiUtil.bean(Identity)
+        self.sessionIdService = CdiUtil.bean(SessionIdService)
+        self.authenticationService = CdiUtil.bean(AuthenticationService)
 
     def init(self, configurationAttributes):
         print "privacyIDEA. Initialization"
@@ -49,39 +51,51 @@ class PersonAuthentication(PersonAuthenticationType):
         return None
 
     def authenticate(self, configurationAttributes, requestParameters, step):
-        # TODO: Here we do the actual authentication.
-        print("privacyIDEA. authenticating in step {0!s}.".format(step))
+        print("privacyIDEA. AUTH STEP {0!s}.".format(step))
         if step == 1:
             print "privacyIDEA. Authenticate against privacyIDEA"
-            print "privacyIDEA. exit authenticate"
-            # authenticationService = CdiUtil.bean(AuthenticationService)
             credentials = self.identity.getCredentials()
             user_name = credentials.getUsername()
             user_password = credentials.getPassword()
 
-            if (user_password == "privacyIDEArocks"):
-                # TODO: Now call the validate/check method of the SDK and pass the user_name and user_password.
+            # TODO: Run /validate/check for the first time with user_name and user_password
+            if user_password == "pin":
+                print("privacyIDEA. The first auth step was successful")
                 # If the user is successfully authenticated, we need to add "aut_user" to the session.
-                sessionIdService = CdiUtil.bean(SessionIdService)
-                sessionId = sessionIdService.getSessionId() # fetch from persistence
-                sessionId.getSessionAttributes().put("auth_user", user_name)
-                sessionIdService.updateSessionId(sessionId)
-                #    logged_in = authenticationService.authenticate(user_name, user_password)
+                sessionId = self.sessionIdService.getSessionId() # fetch from persistence
+                sessionId.getSessionAttributes().put("pi_transaction_id", "blabla")
+                self.sessionIdService.updateSessionId(sessionId)
+                print("privacyIDEA. Updating pi_transaction_id")
+                self.authenticationService.authenticate(user_name)
+
                 print("privacyIDEA. Authenticate. Logged in: {0!s}".format(user_name))
+                # We have to return True to get to the next step!
                 return True
 
-            return False
-        else:
-            # TODO: If we have challenge response, we probably do further steps to answer the challenges
-            print("privacyIDEA. Authenticate. Further step")
-            return False
+        elif step == 2:
+            # TODO: Run /validate/check a second time and respond the challenge
+            print("privacyIDEA. Challenge Response")
+            credentials = self.identity.getCredentials()
+            #user_name = credentials.getUsername()
+            sessionId = self.sessionIdService.getSessionId()
+            user_name = sessionId.getSessionAttributes().get("auth_user")
+            user_password = credentials.getPassword()
+            print("privacyIDEA. Authenticate. CHALLENGE RESPONSE!")
+            print("privacyIDEA. {0!s} / {1!s}.".format(user_name, user_password))
+            # TODO: Send the password and the transaction_id to privacyIDEA.
+            # Pass the user into the session.
+            if user_password == "otp":
+                return True
 
     def prepareForStep(self, configurationAttributes, requestParameters, step):
         if step == 1:
             print "privacyIDEA. Prepare for Step 1"
             return True
-        else:
+        elif step == 2:
+            # This is a 2nd challenge response step
             print("privacyIDEA. Prepare for another Step {0!s}.".format(step))
+            return True
+        else:
             return False
 
     def getExtraParametersForStep(self, configurationAttributes, step):
@@ -89,12 +103,28 @@ class PersonAuthentication(PersonAuthenticationType):
         return None
 
     def getCountAuthenticationSteps(self, configurationAttributes):
-        print("privacyIDEA. getCountAuthSteps. One auth steps.")
-        return 1
+        # TODO: We need to be able to return dynamic number of steps.
+        #       At the beginnding of the authentication process we do not
+        #       know how many steps it will take.
+        print("privacyIDEA. getCountAuthSteps.")
+        sessionId = self.sessionIdService.getSessionId()
+        transaction_id = sessionId.getSessionAttributes().get("pi_transaction_id")
+        if transaction_id:
+            print("privacyIDEA. getCountAuthSteps. Challenge Response.")
+            return 2
+        else:
+            print("privacyIDEA. getCountAuthSteps. One auth steps.")
+            return 1
 
     def getPageForStep(self, configurationAttributes, step):
-        # TODO: If we have challenge response, we need to return the templates here
-        print("privacyIDEA. No extra HTML page for {0!s}.".format(step))
+        if step == 1:
+            print("privacyIDEA. No extra HTML page for {0!s}.".format(step))
+        elif step == 2:
+            # TODO: further authentication steps need to use our own login form, that handles the response
+            #       to the challenge. Currently it is not clear to me, how the templates are found.
+            # See             return "/auth/otp_sms/otp_sms.xhtml"
+            return ""
+            #return "/auth/privacyidea/challenge-response.xhtml"
         return ""
 
     def logout(self, configurationAttributes, requestParameters):
