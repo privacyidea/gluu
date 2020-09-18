@@ -35,7 +35,7 @@ class PersonAuthentication(PersonAuthenticationType):
             from org.privacyidea import PrivacyIDEA
             from org.privacyidea import PIResponse
         except ImportError:
-            print("privacyIDEA. Java SDK import not found! Make sure 'java_sdk.jar' is located at '{}'.".format(sdk_path))
+            print("privacyIDEA. Java SDK import not found! Make sure the jar is located at '{}'.".format(sdk_path))
             return False
 
         if not configurationAttributes.containsKey("privacyidea_url"):
@@ -115,8 +115,6 @@ class PersonAuthentication(PersonAuthenticationType):
                         identity.setWorkingParameter("transaction_message", response.getMessage())
                         self.addToSession("transaction_id", response.getTransactionID())
 
-                        print("Triggered tokentypes: {}".format(response.getTriggeredTokenTypes().toString()))
-                        
                         # Check if push is available
                         tttList = response.getTriggeredTokenTypes()
                         if tttList.contains("push"):
