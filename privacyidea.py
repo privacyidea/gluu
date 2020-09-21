@@ -9,11 +9,11 @@ from javax.faces.application import FacesMessage
 from org.gluu.jsf2.message import FacesMessages
 
 from java.util import Arrays
+import sys
 
 
 def logFromSDK(message):
     print("privacyIDEA. JavaSDK: " + message)
-
 
 class PersonAuthentication(PersonAuthenticationType):
 
@@ -28,7 +28,6 @@ class PersonAuthentication(PersonAuthenticationType):
         if configurationAttributes.contains("sdk_path"):
             sdk_path = configurationAttributes.get("sdk_path").getValue2()
 
-        import sys
         sys.path.append(sdk_path)
         try:
             from org.privacyidea import Challenge
@@ -87,7 +86,7 @@ class PersonAuthentication(PersonAuthenticationType):
         fm.setKeepMessages()
 
         if not self.pi:
-            fm.add(FacesMessage.SEVERITY_ERROR, "The script could not be set up properly, please check the log files")
+            fm.add(FacesMessage.SEVERITY_ERROR, "Failed to communicate to privacyIDEA. Possible misconfiguration. Please have the administrator check the log files.")
             return False
 
         authenticationService = CdiUtil.bean(AuthenticationService)
@@ -111,7 +110,7 @@ class PersonAuthentication(PersonAuthenticationType):
                         return logged_in
 
                     # If not, check if transaction was triggered
-                    if response.getTransactionID():
+                    elif response.getTransactionID():
                         identity.setWorkingParameter("transaction_message", response.getMessage())
                         self.addToSession("transaction_id", response.getTransactionID())
 
@@ -144,7 +143,7 @@ class PersonAuthentication(PersonAuthenticationType):
                 authenticationService.authenticate(currentUser)
             else:
                 print("privacyIDEA. No user found in session for second step")
-                fm.add(FacesMessage.SEVERITY_ERROR, "An error occurred. Please try to restart the authentication!")
+                fm.add(FacesMessage.SEVERITY_ERROR, "Session data got lost. Please try to restart the authentication!")
                 return False
 
             try:
