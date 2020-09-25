@@ -23,9 +23,10 @@ class PersonAuthentication(PersonAuthenticationType):
 
     def init(self, configurationAttributes):
         print("privacyIDEA. init")
-
+        self.pi = None
+        
         sdk_path = "/opt/java_sdk.jar"
-        if configurationAttributes.contains("sdk_path"):
+        if configurationAttributes.containsKey("sdk_path"):
             sdk_path = configurationAttributes.get("sdk_path").getValue2()
 
         sys.path.append(sdk_path)
@@ -35,11 +36,13 @@ class PersonAuthentication(PersonAuthenticationType):
             from org.privacyidea import PIResponse
         except ImportError:
             print("privacyIDEA. Java SDK import not found! Make sure the jar is located at '{}'.".format(sdk_path))
-            return False
+            # returning success here allows to display a error message in the authenticate function
+            # because self.pi will be None
+            return True
 
         if not configurationAttributes.containsKey("privacyidea_url"):
             print("privacyIDEA. Missing mandatory configuration value 'privacyidea_url'!")
-            return False
+            return True
 
         privacyidea_url = configurationAttributes.get("privacyidea_url").getValue2()
 
@@ -66,17 +69,6 @@ class PersonAuthentication(PersonAuthenticationType):
         print("privacyIDEA. init done")
         return True
 
-    def addToSession(self, key, value):
-        #print("addToSession: %s, %s" % (key, value))
-        session = self.sessionIdservice.getSessionId()
-        session.getSessionAttributes().put(key, value)
-        self.sessionIdservice.updateSessionId(session)
-
-    def getFromSession(self, key):
-        #print("getFromSession: %s" % key)
-        session = self.sessionIdservice.getSessionId()
-        return session.getSessionAttributes().get(key) if session else None
-
     def authenticate(self, configurationAttributes, requestParameters, step):
         #print("privacyIDEA. authenticate step {}".format(step))
         #print("privacyIDEA. requestParameters: %s" % requestParameters)
@@ -85,7 +77,7 @@ class PersonAuthentication(PersonAuthenticationType):
         fm.clear()
         fm.setKeepMessages()
 
-        if not self.pi:
+        if self.pi is None:
             fm.add(FacesMessage.SEVERITY_ERROR, "Failed to communicate to privacyIDEA. Possible misconfiguration. Please have the administrator check the log files.")
             return False
 
@@ -186,6 +178,17 @@ class PersonAuthentication(PersonAuthenticationType):
                     if resp:
                         return resp.getValue()
         return False
+
+    def addToSession(self, key, value):
+        #print("addToSession: %s, %s" % (key, value))
+        session = self.sessionIdservice.getSessionId()
+        session.getSessionAttributes().put(key, value)
+        self.sessionIdservice.updateSessionId(session)
+
+    def getFromSession(self, key):
+        #print("getFromSession: %s" % key)
+        session = self.sessionIdservice.getSessionId()
+        return session.getSessionAttributes().get(key) if session else None
 
     def prepareForStep(self, configurationAttributes, requestParameters, step):
         #print("prepareForStep %i" % step)
