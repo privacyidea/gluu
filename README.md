@@ -23,8 +23,8 @@ This is the authentication script to authenticate Gluu against privacyIDEA.
 
 #### The following keys are optional:
 
-* ``realm`` : specify a realm that will be appended to each request.
-* ``sslverify`` : set to ``0`` to disable peer verification.
+* ``realm`` specify a realm that will be appended to each request.
+* ``sslverify`` set to ``0`` to disable peer verification.
 * ``log_from_sdk`` with any value: enable the logging of the jar.
 
 * **After finishing the configuration, change the default authentication method to the Person Authentication script you just created.**
