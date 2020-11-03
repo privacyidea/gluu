@@ -1,3 +1,38 @@
+# -*- coding: utf-8 -*-
+#
+# privacyIDEA is a Multi-Factor-Management system that supports
+# a wide variety of different tokentypes like smartphone apps, key fob tokens,
+# yubikeys, u2f, fido2, email, sms...
+# The administrator of an organization can manage the 2nd factors of the
+# users centrally in privacyIDEA and connect any application with privacyIDEA
+# to secure the login process.
+#
+# This authentication script adds a most flexible multi-factor-authentication
+# to Gluu. See:
+#      https://privacyidea.org
+# Get enterprise support at:
+#      https://netknights.it/en/produkte/privacyidea/
+#
+# License:  AGPLv3
+#
+# This code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or any later version.
+#
+# This code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU AFFERO GENERAL PUBLIC LICENSE for more details.
+#
+# You should have received a copy of the GNU Affero General Public
+# License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+__doc__ = """This script enables Gluu to communicate to privacyIDEA server
+and have the privacyIDEA verify the second factor.
+"""
+
 from org.gluu.oxauth.security import Identity
 from org.gluu.oxauth.service import AuthenticationService, SessionIdService
 from org.gluu.model.custom.script.type.auth import PersonAuthenticationType
@@ -24,7 +59,7 @@ class PersonAuthentication(PersonAuthenticationType):
     def init(self, configurationAttributes):
         print("privacyIDEA. init")
         self.pi = None
-        
+
         sdk_path = "/opt/java_sdk.jar"
         if configurationAttributes.containsKey("sdk_path"):
             sdk_path = configurationAttributes.get("sdk_path").getValue2()
@@ -110,8 +145,8 @@ class PersonAuthentication(PersonAuthenticationType):
                         tttList = response.getTriggeredTokenTypes()
                         if tttList.contains("push"):
                             identity.setWorkingParameter("push_available", "1")
-                            tttList.remove("push")                        
-                        
+                            tttList.remove("push")
+
                         # Check if an input field is needed for any other token type
                         if tttList.size() > 0:
                             identity.setWorkingParameter("otp_available", "1")
@@ -167,7 +202,7 @@ class PersonAuthentication(PersonAuthenticationType):
                 except TypeError:
                     print("privacyIDEA. Unable to obtain OTP from requestParameters, but it is required!")
                     fm.add(FacesMessage.SEVERITY_ERROR, "Your input could not be read. Please try to restart the authentication!")
-                
+
                 if otp:
                     # Either do validate/check with transaction id if there is one in the session or just with the input
                     if txid:
@@ -194,7 +229,7 @@ class PersonAuthentication(PersonAuthenticationType):
         #print("prepareForStep %i" % step)
         #print("requestParameters: %s" %requestParameters)
         if step == 1: return True
-        
+
         # Set the initial state for our template
         identity = CdiUtil.bean(Identity)
         identity.setWorkingParameter("mode", "otp")
