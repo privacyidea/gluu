@@ -47,6 +47,9 @@ from java.util import Arrays
 import sys
 
 
+PI_USER_AGENT = "privacyidea-gluu"
+
+
 def logFromSDK(message):
     print("privacyIDEA. JavaSDK: " + message)
 
@@ -81,7 +84,7 @@ class PersonAuthentication(PersonAuthenticationType):
 
         privacyidea_url = configurationAttributes.get("privacyidea_url").getValue2()
 
-        builder = PrivacyIDEA.Builder(privacyidea_url)
+        builder = PrivacyIDEA.Builder(privacyidea_url, PI_USER_AGENT)
 
         if configurationAttributes.containsKey("log_from_sdk"):
             builder.setSimpleLog(logFromSDK)
