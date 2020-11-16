@@ -21,11 +21,17 @@ This is the authentication script to authenticate Gluu against privacyIDEA.
 
 * If the java sdk is not in the above mentioned default location, add the key ``sdk_path`` with the path to the file including its compelete name as value.
 
-#### The following keys are optional:
+#### The following keys are optional (case sensitive!):
 
 * ``realm`` specify a realm that will be appended to each request.
 * ``sslverify`` set to ``0`` to disable peer verification.
 * ``log_from_sdk`` with any value: enable the logging of the jar.
+* ``sendpassword`` set to ``1`` if the password from the first step should be sent to the privacyIDEA server.
+* ``triggerchallenge`` set to ``1`` if challenges for the user should be triggered using the service account.
+* ``serviceaccountname`` name of the service account to trigger challenges with.
+* ``serviceaccountpass`` password of the service account to trigger challenges with.
+* ``serviceaccountrealm`` optionally set the realm in which the service account can be found if it is different from the ``realm`` or default realm.
+* ``verifygluupassword`` set to ``1`` to have the password from the first step verfied by the Gluu server.
 
 * **After finishing the configuration, change the default authentication method to the Person Authentication script you just created.**
 
