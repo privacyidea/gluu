@@ -101,9 +101,9 @@ class PersonAuthentication(PersonAuthenticationType):
         else:
             print("privacyIDEA. Config param 'realm' not set")
 
-        self.verifyGluuPassword = True
-        if configurationAttributes.containsKey("verifygluupassword"):
-            self.triggerChallenge = configurationAttributes.get("verifygluupassword").getValue2() == "1"
+        self.disableGluuPass = False
+        if configurationAttributes.containsKey("disablegluupass"):
+            self.disableGluuPass = configurationAttributes.get("disablegluupass").getValue2() == "1"
 
         # Load configuration for optional trigger challenge or send password in first step
         self.sendPassword = False
@@ -265,7 +265,7 @@ class PersonAuthentication(PersonAuthenticationType):
     def login(self, username, password):
         #print("Login with user={} and pass={}, verifyGluuPassword={}".format(username, password, self.verifyGluuPassword))
         authenticationService = CdiUtil.bean(AuthenticationService)
-        if self.verifyGluuPassword:
+        if not self.disableGluuPass:
             logged_in = authenticationService.authenticate(username, password)
         else:
             logged_in = authenticationService.authenticate(username)
