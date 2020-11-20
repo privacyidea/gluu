@@ -33,7 +33,7 @@ __doc__ = """This script enables Gluu to communicate to privacyIDEA server
 and have the privacyIDEA verify the second factor.
 """
 
-__version__ = "0.0.0"
+__version__ = "1.0.0"
 
 from org.gluu.oxauth.security import Identity
 from org.gluu.oxauth.service import AuthenticationService, SessionIdService
@@ -307,7 +307,6 @@ class PersonAuthentication(PersonAuthenticationType):
 
     def getPageForStep(self, configurationAttributes, step):
         #print("getPageForStep {}".format(step))
-        # This path is relative to /opt/gluu-server/opt/jetty-x.x/temp/...-oxauth_war-_oxauth-any-.../webapp
         return "" if step == 1 else "/auth/privacyidea/privacyidea.xhtml"
 
     def getNextStep(self, configurationAttributes, requestParameters, step):
