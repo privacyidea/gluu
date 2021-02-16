@@ -2,7 +2,7 @@ This is the authentication script to authenticate Gluu against privacyIDEA.
 
 # Setup
 
-* Download the jar-with-dependencies from [here](https://github.com/privacyidea/sdk-java/releases).
+* Download the v0.1 jar-with-dependencies from [here](https://github.com/privacyidea/sdk-java/releases).
 * Change the name to ``java_sdk.jar`` and put it in ``/opt/gluu-server/opt``.
 * Alternatively put the file under any name anywhere in ``/opt/gluu-server/`` and configure the path later.
 
