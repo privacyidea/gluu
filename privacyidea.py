@@ -86,7 +86,7 @@ class PersonAuthentication(PersonAuthenticationType):
 
         privacyidea_url = configurationAttributes.get("privacyidea_url").getValue2()
 
-        builder = PrivacyIDEA.Builder(privacyidea_url, PI_USER_AGENT)
+        builder = PrivacyIDEA.Builder(privacyidea_url)
 
         if configurationAttributes.containsKey("log_from_sdk"):
             builder.setSimpleLog(logFromSDK)
